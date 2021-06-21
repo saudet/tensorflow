@@ -1,0 +1,212 @@
+diff -ruN -X - build/abseil-cpp/absl/debugging/symbolize_elf.inc ../../tensorflow/build/abseil-cpp/absl/debugging/symbolize_elf.inc
+--- build/abseil-cpp/absl/debugging/symbolize_elf.inc   2021-06-21 04:47:27.735052002 -0400
++++ ../../tensorflow/build/abseil-cpp/absl/debugging/symbolize_elf.inc  2021-06-02 09:09:42.361644008 -0400
+@@ -543,7 +543,7 @@
+       return false;
+     }
+ 
+-    absl::string_view name(header_name, strnlen(header_name, n_read));
++    absl::string_view name(header_name, strlen(header_name));
+     if (!callback(name, out)) {
+       break;
+     }
+diff -ruN -X - build/abseil-cpp/absl/base/attributes.h ../../tensorflow/build/abseil-cpp/absl/base/attributes.h
+--- build/abseil-cpp/absl/base/attributes.h	2021-06-21 04:47:27.704052334 -0400
++++ ../../tensorflow/build/abseil-cpp/absl/base/attributes.h	2021-06-02 09:07:58.922784377 -0400
+@@ -311,7 +311,7 @@
+ //
+ #ifndef ABSL_ATTRIBUTE_SECTION
+ #define ABSL_ATTRIBUTE_SECTION(name) \
+-  __attribute__((section(#name))) __attribute__((noinline))
++//  __attribute__((section(#name))) __attribute__((noinline))
+ #endif
+ 
+ 
+@@ -321,7 +321,7 @@
+ // `__start_ ## name` and `__stop_ ## name` symbols to bracket the section.
+ // This functionality is supported by GNU linker.
+ #ifndef ABSL_ATTRIBUTE_SECTION_VARIABLE
+-#define ABSL_ATTRIBUTE_SECTION_VARIABLE(name) __attribute__((section(#name)))
++//#define ABSL_ATTRIBUTE_SECTION_VARIABLE(name) __attribute__((section(#name)))
+ #endif
+ 
+ // ABSL_DECLARE_ATTRIBUTE_SECTION_VARS
+diff -ruN -X - build/abseil-cpp/absl/base/internal/direct_mmap.h ../../tensorflow/build/abseil-cpp/absl/base/internal/direct_mmap.h
+--- build/abseil-cpp/absl/base/internal/direct_mmap.h	2021-06-21 04:47:27.707052302 -0400
++++ ../../tensorflow/build/abseil-cpp/absl/base/internal/direct_mmap.h	2021-06-02 09:02:48.720204229 -0400
+@@ -24,7 +24,7 @@
+ 
+ #include <sys/mman.h>
+ 
+-#ifdef __linux__
++#if defined(__linux__) && !defined(__NEC__)
+ 
+ #include <sys/types.h>
+ #ifdef __BIONIC__
+diff -ruN -X - build/abseil-cpp/absl/base/internal/spinlock_wait.cc ../../tensorflow/build/abseil-cpp/absl/base/internal/spinlock_wait.cc
+--- build/abseil-cpp/absl/base/internal/spinlock_wait.cc	2021-06-21 04:47:27.711052259 -0400
++++ ../../tensorflow/build/abseil-cpp/absl/base/internal/spinlock_wait.cc	2021-06-02 09:01:53.044818026 -0400
+@@ -23,7 +23,7 @@
+ 
+ #if defined(_WIN32)
+ #include "absl/base/internal/spinlock_win32.inc"
+-#elif defined(__linux__)
++#elif defined(__linux__) && !defined(__NEC__)
+ #include "absl/base/internal/spinlock_linux.inc"
+ #elif defined(__akaros__)
+ #include "absl/base/internal/spinlock_akaros.inc"
+diff -ruN -X - build/abseil-cpp/absl/synchronization/internal/futex.h ../../tensorflow/build/abseil-cpp/absl/synchronization/internal/futex.h
+--- build/abseil-cpp/absl/synchronization/internal/futex.h	2021-06-21 04:47:27.782051498 -0400
++++ ../../tensorflow/build/abseil-cpp/absl/synchronization/internal/futex.h	2021-06-02 09:12:04.071081722 -0400
+@@ -23,7 +23,7 @@
+ #include <unistd.h>
+ #endif
+ 
+-#ifdef __linux__
++#if defined(__linux__) && !defined(__NEC__)
+ #include <linux/futex.h>
+ #include <sys/syscall.h>
+ #endif
+diff -ruN -X - build/abseil-cpp/absl/synchronization/internal/waiter.cc ../../tensorflow/build/abseil-cpp/absl/synchronization/internal/waiter.cc
+--- build/abseil-cpp/absl/synchronization/internal/waiter.cc	2021-06-21 04:47:27.783051487 -0400
++++ ../../tensorflow/build/abseil-cpp/absl/synchronization/internal/waiter.cc	2021-06-02 09:12:33.032762432 -0400
+@@ -24,7 +24,7 @@
+ #include <unistd.h>
+ #endif
+ 
+-#ifdef __linux__
++#if defined(__linux__) && !defined(__NEC__)
+ #include <linux/futex.h>
+ #include <sys/syscall.h>
+ #endif
+diff -ruN -X - build/abseil-cpp/absl/synchronization/internal/waiter.h ../../tensorflow/build/abseil-cpp/absl/synchronization/internal/waiter.h
+--- build/abseil-cpp/absl/synchronization/internal/waiter.h	2021-06-21 04:47:27.783051487 -0400
++++ ../../tensorflow/build/abseil-cpp/absl/synchronization/internal/waiter.h	2021-06-02 09:11:39.748349870 -0400
+@@ -24,7 +24,7 @@
+ #include <pthread.h>
+ #endif
+ 
+-#ifdef __linux__
++#if defined(__linux__) && !defined(__NEC__)
+ #include <linux/futex.h>
+ #endif
+ 
+diff -ruN -X - build/abseil-cpp/absl/time/time.h ../../tensorflow/build/abseil-cpp/absl/time/time.h
+--- build/abseil-cpp/absl/time/time.h	2021-06-21 04:47:27.815051144 -0400
++++ ../../tensorflow/build/abseil-cpp/absl/time/time.h	2021-06-02 09:10:42.866976962 -0400
+@@ -107,9 +107,9 @@
+ constexpr int64_t kTicksPerNanosecond = 4;
+ constexpr int64_t kTicksPerSecond = 1000 * 1000 * 1000 * kTicksPerNanosecond;
+ template <std::intmax_t N>
+-constexpr Duration FromInt64(int64_t v, std::ratio<1, N>);
+-constexpr Duration FromInt64(int64_t v, std::ratio<60>);
+-constexpr Duration FromInt64(int64_t v, std::ratio<3600>);
++Duration FromInt64(int64_t v, std::ratio<1, N>);
++Duration FromInt64(int64_t v, std::ratio<60>);
++Duration FromInt64(int64_t v, std::ratio<3600>);
+ template <typename T>
+ using EnableIfIntegral = typename std::enable_if<
+     std::is_integral<T>::value || std::is_enum<T>::value, int>::type;
+@@ -1397,19 +1397,19 @@
+ constexpr Duration ToUnixDuration(Time t) { return t.rep_; }
+ 
+ template <std::intmax_t N>
+-constexpr Duration FromInt64(int64_t v, std::ratio<1, N>) {
++Duration FromInt64(int64_t v, std::ratio<1, N>) {
+   static_assert(0 < N && N <= 1000 * 1000 * 1000, "Unsupported ratio");
+   // Subsecond ratios cannot overflow.
+   return MakeNormalizedDuration(
+       v / N, v % N * kTicksPerNanosecond * 1000 * 1000 * 1000 / N);
+ }
+-constexpr Duration FromInt64(int64_t v, std::ratio<60>) {
++Duration FromInt64(int64_t v, std::ratio<60>) {
+   return (v <= (std::numeric_limits<int64_t>::max)() / 60 &&
+           v >= (std::numeric_limits<int64_t>::min)() / 60)
+              ? MakeDuration(v * 60)
+              : v > 0 ? InfiniteDuration() : -InfiniteDuration();
+ }
+-constexpr Duration FromInt64(int64_t v, std::ratio<3600>) {
++Duration FromInt64(int64_t v, std::ratio<3600>) {
+   return (v <= (std::numeric_limits<int64_t>::max)() / 3600 &&
+           v >= (std::numeric_limits<int64_t>::min)() / 3600)
+              ? MakeDuration(v * 3600)
+diff -ruN build/eigen/Eigen/src/Core/GenericPacketMath.h ../../tensorflow/build/eigen/Eigen/src/Core/GenericPacketMath.h
+--- build/eigen/Eigen/src/Core/GenericPacketMath.h      2021-06-21 04:47:41.579903497 -0400
++++ ../../tensorflow/build/eigen/Eigen/src/Core/GenericPacketMath.h     2021-06-02 17:28:26.327200513 -0400
+@@ -600,7 +600,7 @@
+   // 32-bit pointer operand constraint for inlined asm
+   asm(" prefetch.L1 [ %1 ];" : "=r"(addr) : "r"(addr));
+ #endif
+-#elif (!EIGEN_COMP_MSVC) && (EIGEN_COMP_GNUC || EIGEN_COMP_CLANG || EIGEN_COMP_ICC)
++#elif (!EIGEN_COMP_MSVC) && (EIGEN_COMP_GNUC || EIGEN_COMP_CLANG || EIGEN_COMP_ICC) && !defined(__NEC__)
+   __builtin_prefetch(addr);
+ #endif
+ }
+diff -ruN -X - build/flatbuffers/CMakeLists.txt ../../tensorflow/build/flatbuffers/CMakeLists.txt
+--- build/flatbuffers/CMakeLists.txt    2021-06-21 04:47:53.108779835 -0400
++++ ../../tensorflow/build/flatbuffers/CMakeLists.txt   2021-06-02 09:16:51.421913801 -0400
+@@ -220,18 +220,18 @@
+       "${CMAKE_CXX_FLAGS} -std=gnu++11")
+   else(CYGWIN)
+     set(CMAKE_CXX_FLAGS
+-      "${CMAKE_CXX_FLAGS} -std=c++0x")
++      "${CMAKE_CXX_FLAGS} -std=gnu++11")
+   endif(CYGWIN)
+   set(CMAKE_CXX_FLAGS
+-    "${CMAKE_CXX_FLAGS} -Wall -pedantic -Werror -Wextra -Werror=shadow")
+-  set(FLATBUFFERS_PRIVATE_CXX_FLAGS "-Wold-style-cast")
++    "${CMAKE_CXX_FLAGS} -Wall -pedantic -Werror -Werror=shadow")
++  set(FLATBUFFERS_PRIVATE_CXX_FLAGS "")
+   if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.4)
+     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0)
+       set(CMAKE_CXX_FLAGS
+         "${CMAKE_CXX_FLAGS} -faligned-new -Werror=implicit-fallthrough=2")
+     endif()
+     set(CMAKE_CXX_FLAGS
+-      "${CMAKE_CXX_FLAGS} -Wunused-result -Werror=unused-result -Wunused-parameter -Werror=unused-parameter")
++      "${CMAKE_CXX_FLAGS} -Werror=unused-result -Wunused-parameter -Werror=unused-parameter")
+   endif()
+ 
+   # Certain platforms such as ARM do not use signed chars by default
+@@ -241,7 +241,7 @@
+ 
+ elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+   set(CMAKE_CXX_FLAGS
+-      "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -pedantic -Werror -Wextra -Wno-unused-parameter")
++      "${CMAKE_CXX_FLAGS} -Wall -pedantic -Werror -Wextra -Wno-unused-parameter")
+   set(FLATBUFFERS_PRIVATE_CXX_FLAGS "-Wold-style-cast")
+   if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.8)
+     list(APPEND FLATBUFFERS_PRIVATE_CXX_FLAGS "-Wimplicit-fallthrough" "-Wextra-semi" "-Werror=unused-private-field") # enable warning
+diff -ruN -X - build/gemmlowp/internal/common.h ../../tensorflow/build/gemmlowp/internal/common.h
+--- build/gemmlowp/internal/common.h	2021-06-21 04:47:57.546732232 -0400
++++ ../../tensorflow/build/gemmlowp/internal/common.h	2021-06-02 17:29:10.813709878 -0400
+@@ -123,7 +123,7 @@
+   // For our purposes, "pldl1keep" is usually what we want, meaning:
+   // "prefetch for load, into L1 cache, using each value multiple times".
+   asm volatile("prfm pldl1keep, [%[ptr]]\n" ::[ptr] "r"(ptr) :);
+-#elif defined \
++#elif !defined(__NEC__) && defined \
+     __GNUC__  // Clang and GCC define __GNUC__ and have __builtin_prefetch.
+   __builtin_prefetch(ptr);
+ #else
+diff -ruN -X - build/ruy/ruy/pmu.cc ../../tensorflow/build/ruy/ruy/pmu.cc
+--- build/ruy/ruy/pmu.cc	2021-06-21 04:48:02.372680467 -0400
++++ ../../tensorflow/build/ruy/ruy/pmu.cc	2021-06-02 08:55:28.336059276 -0400
+@@ -17,7 +17,7 @@
+ 
+ #include "ruy/check_macros.h"
+ 
+-#ifdef __linux__
++#if defined(__linux__) && !defined(__NEC__)
+ #include <asm/unistd.h>
+ #include <linux/perf_event.h>
+ #include <sys/ioctl.h>
+@@ -35,7 +35,7 @@
+ namespace ruy {
+ 
+ // Linux-specific. Not ARM-specific.
+-#ifdef __linux__
++#if defined(__linux__) && !defined(__NEC__)
+ class PerfEvent {
+  public:
+   PerfEvent(std::uint32_t type, std::uint64_t config) {

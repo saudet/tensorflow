@@ -98,19 +98,19 @@ class Flag {
             default_value, usage_text, flag_type) {}
 
   CONSTRUCTOR_WITH_ARGV_INDEX(int32_t, int32_t)
-  CONSTRUCTOR_WITHOUT_ARGV_INDEX(int32_t, int32_t)
+//  CONSTRUCTOR_WITHOUT_ARGV_INDEX(int32_t, int32_t)
 
   CONSTRUCTOR_WITH_ARGV_INDEX(int64_t, int64_t)
-  CONSTRUCTOR_WITHOUT_ARGV_INDEX(int64_t, int64_t)
+//  CONSTRUCTOR_WITHOUT_ARGV_INDEX(int64_t, int64_t)
 
   CONSTRUCTOR_WITH_ARGV_INDEX(float, float)
-  CONSTRUCTOR_WITHOUT_ARGV_INDEX(float, float)
+//  CONSTRUCTOR_WITHOUT_ARGV_INDEX(float, float)
 
   CONSTRUCTOR_WITH_ARGV_INDEX(bool, bool)
-  CONSTRUCTOR_WITHOUT_ARGV_INDEX(bool, bool)
+//  CONSTRUCTOR_WITHOUT_ARGV_INDEX(bool, bool)
 
   CONSTRUCTOR_WITH_ARGV_INDEX(std::string, const std::string&)
-  CONSTRUCTOR_WITHOUT_ARGV_INDEX(std::string, const std::string&)
+//  CONSTRUCTOR_WITHOUT_ARGV_INDEX(std::string, const std::string&)
 
 #undef CONSTRUCTOR_WITH_ARGV_INDEX
 #undef CONSTRUCTOR_WITHOUT_ARGV_INDEX

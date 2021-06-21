@@ -461,7 +461,7 @@ BenchmarkTfLiteModel::InputTensorData BenchmarkTfLiteModel::LoadInputTensorData(
     }
   } else {
     value_file.seekg(0, std::ios_base::end);
-    if (value_file.tellg() != t.bytes) {
+    if ((size_t)value_file.tellg() != (size_t)t.bytes) {
       TFLITE_LOG(FATAL) << "The size of " << input_file_path << " is "
                         << value_file.tellg() << " bytes. It should be "
                         << t.bytes << " bytes.";

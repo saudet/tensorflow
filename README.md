@@ -1,3 +1,33 @@
+# TensorFlow Lite for NEC SX-Aurora VE
+
+This repository is a clone of public TensorFlow repository
+(https://github.com/tensorflow/tensorflow), plus experimental modifications
+which provide support for the NEC SX-Aurora TSUBASA Vector Engine (VE).
+
+## How to build
+
+ * After installing all tools necessary for NCC, run:
+    ```bash
+    git clone https://github.com/saudet/tensorflow
+    mkdir tensorflow/build
+    cd tensorflow/build
+    git checkout aurora
+    CC="/opt/nec/ve/bin/ncc -finline-functions -finline-max-depth=10 -fassociative-math" CXX="/opt/nec/ve/bin/nc++ -finline-functions -finline-max-depth=10 -fassociative-math" cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DTFLITE_ENABLE_XNNPACK=OFF ../tensorflow/lite/c
+    patch -p1 < ../aurora.patch
+    make -j100 benchmark_model
+    ```
+
+## How to deploy
+
+ * Benchmark for ImageNet models from [Hosted models | TensorFlow Lite](https://www.tensorflow.org/lite/guide/hosted_models):
+    ```bash
+    ./tensorflow-lite/tools/benchmark/benchmark_model --graph=mobilenet_v1_1.0_224.tflite --num_threads=1 --num_runs=100
+    ```
+
+**Notes**:
+ * The runtime currently crashes with `Segmentation fault` when trying to use multiple threads
+ * To obtain faster-than-CPU performance we need to port and optimize [XNNPACK](https://github.com/google/XNNPACK) for Aurora
+
 <div align="center">
   <img src="https://www.tensorflow.org/images/tf_logo_social.png">
 </div>

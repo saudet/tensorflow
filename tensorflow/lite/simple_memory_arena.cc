@@ -162,7 +162,7 @@ TfLiteStatus SimpleMemoryArena::ReleaseBuffer() {
   committed_ = false;
   underlying_buffer_size_ = 0;
   underlying_buffer_aligned_ptr_ = nullptr;
-  underlying_buffer_.reset();
+  underlying_buffer_ = nullptr;
   return kTfLiteOk;
 }
 

@@ -1006,7 +1006,7 @@ inline int LegacyHowManyThreads(int max_num_threads, int rows, int cols,
 
 template <typename T>
 void optimized_ops_preload_l1_stream(const T* ptr) {
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__NEC__)
   // builtin offered by GCC-compatible compilers including clang
   __builtin_prefetch(ptr, /* 0 means read */ 0, /* 0 means no locality */ 0);
 #else
@@ -1016,7 +1016,7 @@ void optimized_ops_preload_l1_stream(const T* ptr) {
 
 template <typename T>
 void optimized_ops_preload_l1_keep(const T* ptr) {
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__NEC__)
   // builtin offered by GCC-compatible compilers including clang
   __builtin_prefetch(ptr, /* 0 means read */ 0, /* 3 means high locality */ 3);
 #else
@@ -1026,7 +1026,7 @@ void optimized_ops_preload_l1_keep(const T* ptr) {
 
 template <typename T>
 void optimized_ops_prefetch_write_l1_keep(const T* ptr) {
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__NEC__)
   // builtin offered by GCC-compatible compilers including clang
   __builtin_prefetch(ptr, /* 1 means write */ 1, /* 3 means high locality */ 3);
 #else

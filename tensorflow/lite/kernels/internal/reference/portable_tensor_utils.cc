@@ -146,7 +146,7 @@ void PortableMatrixBatchVectorMultiplyAccumulate(
     for (int row = 0; row < m_rows; ++row) {
       // Initialize the dot product sum for the row to 0.
       int32_t dotprod = 0;
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__NEC__)
       // Prefetch the row to cache.
       __builtin_prefetch(row_ptr, 0 /* prefetch for read */,
                          3 /* temporal locality */);
@@ -188,7 +188,7 @@ void PortableMatrixBatchVectorMultiplyAccumulate(
       if (per_channel_scale) {
         scale *= per_channel_scale[row];
       }
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__NEC__)
       // Prefetch the row to cache.
       __builtin_prefetch(row_ptr, 0 /* prefetch for read */,
                          3 /* temporal locality */);
@@ -271,7 +271,7 @@ void PortableSparseMatrixBatchVectorMultiplyAccumulate(
     for (int row = 0; row < m_rows; ++row) {
       // Initialize the dot product sum for the row to 0.
       int32_t dotprod = 0;
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__NEC__)
       // Prefetch the row to cache.
       __builtin_prefetch(row_ptr, 0 /* prefetch for read */,
                          3 /* temporal locality */);
